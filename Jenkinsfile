@@ -38,11 +38,15 @@ pipeline {
                 script {
                     // Fetch the SSH key and store it in a variable
                     withCredentials([sshUserPrivateKey(credentialsId: 'cloud-ssh-id', keyFileVariable: 'SSH_KEY')]) {
+                        // Customize the location of the known hosts file
+                        def knownHostsFile = '/var/jenkins_home/.ssh/known_hosts'
+                        
+                        // Create the .ssh directory if it doesn't exist
+                        sh "mkdir -p /var/jenkins_home/.ssh"
+                        
                         // Fetch and store the host key fingerprint
                         def remoteHost = '34.152.7.19'
                         def remoteHostKey = sh(returnStdout: true, script: "ssh-keyscan ${remoteHost}")
-                        // Customize the location of the known hosts file
-                        def knownHostsFile = '/var/jenkins_home/.ssh/known_hosts'
                         
                         // Append the remote host key to the known hosts file
                         sh "echo '${remoteHostKey}' >> ${knownHostsFile}"
