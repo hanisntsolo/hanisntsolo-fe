@@ -1,47 +1,45 @@
 pipeline {
     agent any
-
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
+        IMAGE_NAME = 'hanisntsolo/react-fe'
+        SERVER_SSH_CREDENTIALS = credentials('cloud-ssh-id)
+        SERVER_USER = 'root'
+        SERVER_IP = '34.152.7.19'
+        SERVER_DESTINATION_FOLDER = '/docker/lab/deployed'
+    }
     stages {
         stage('Build') {
             steps {
-                // Build the Docker image
-                script {
-                    dockerImage = docker.build("my-node-app:${env.BUILD_ID}")
-                }
+                sh 'npm install'
+                sh 'npm run build'
             }
         }
-        
-        stage('Test') {
+	stage('Build Docker Image') {
             steps {
-                // Run tests inside the Docker container (assuming you have a "test" script in your package.json)
-                script {
-                    dockerImage.inside {
-                        sh 'npm install'
-                        sh 'npm test'
-                    }
-                }
+                // Build the Docker image using the Dockerfile in your project directory
+                sh "docker build -t $IMAGE_NAME ."
             }
         }
-        
-        stage('Deploy') {
+        stage('Publish to Docker Hub') {
             steps {
-                // Push the Docker image to the Docker registry (optional)
-                script {
-                    withDockerRegistry([credentialsId: 'YOUR_DOCKER_CREDENTIALS_ID', url: 'https://index.docker.io/v1/']) {
-                        dockerImage.push()
-                    }
+                withCredentials([string(credentialsId: 'DOCKER_HUB_CREDENTIALS', variable: 'DOCKER_HUB_CREDENTIALS')]) {
+                    sh 'docker login -u your-docker-hub-username -p $DOCKER_HUB_CREDENTIALS'
+                    sh 'docker push $IMAGE_NAME'
                 }
-                // Add deployment steps here if needed
             }
         }
-    }
+        stage('Deploy to Server') {
+            steps {
 
-    post {
-        success {
-            echo 'Pipeline succeeded!'
-        }
-        failure {
-            echo 'Pipeline failed!'
+                // Your deployment steps here, e.g., using SSH or any other method to deploy the Docker image on your server
+		script {
+			//SSH into the server and deploy
+	            	withCredentials([sshUserPrivateKey(credentialsId: 'SERVER_SSH_CREDENTIALS', keyFileVariable: 'SSH_KEY')]) {
+	                sh "ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP 'docker stop your-container-name || true && docker rm react-fe || true'"
+	                sh "ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP 'docker run -d -p 3000:3000 --name react-fe $IMAGE_NAME'"
+		}
+            }
         }
     }
 }
