@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
         IMAGE_NAME = 'hanisntsolo/react-fe'
-        SERVER_SSH_CREDENTIALS = credentials('cloud-ssh-id)
+        SERVER_SSH_CREDENTIALS = credentials('cloud-ssh-id')
         SERVER_USER = 'root'
         SERVER_IP = '34.152.7.19'
         SERVER_DESTINATION_FOLDER = '/docker/lab/deployed'
