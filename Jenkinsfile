@@ -7,7 +7,7 @@ pipeline {
         SERVER_USER = 'root'
         SERVER_IP = '34.152.7.19'
         SERVER_DESTINATION_FOLDER = '/docker/lab/deployed'
-	SSH_KEY=''
+	    SSH_KEY=''
     }
     stages {
         stage('Build') {
@@ -24,7 +24,7 @@ pipeline {
             }
         stage('Publish to Docker Hub') {
                 steps {
-                    withCredentials([string(credentialsId: 'DOCKER_HUB_CREDENTIALS', variable: 'DOCKER_HUB_CREDENTIALS')]) {
+                    withCredentials([string(credentialsId: 'docker-hub-credentials', variable: 'docker-hub-credentials')]) {
                         sh 'docker login -u your-docker-hub-username -p $DOCKER_HUB_CREDENTIALS'
                         sh 'docker push $IMAGE_NAME'
                 }
@@ -35,7 +35,7 @@ pipeline {
                     // Your deployment steps here, e.g., using SSH or any other method to deploy the Docker image on your server
                 script {
                         //SSH into the server and deploy
-                    withCredentials([sshUserPrivateKey(credentialsId: 'SERVER_SSH_CREDENTIALS', keyFileVariable: 'SSH_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: 'cloud-ssh-id', keyFileVariable: 'SSH_KEY')]) {
                     sh "ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP 'docker stop react-fe || true && docker rm react-fe || true'"
                     sh "ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP 'docker run -d -p 3000:3000 --name react-fe $IMAGE_NAME'"
                     }
