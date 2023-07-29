@@ -23,10 +23,10 @@ pipeline {
                 }
             }
         stage('Publish to Docker Hub') {
-                steps {
-                    withCredentials([string(credentialsId: 'docker-hub-credentials', variable: 'docker-hub-credentials')]) {
-                        sh 'docker login -u your-docker-hub-username -p $DOCKER_HUB_CREDENTIALS'
-                        sh 'docker push $IMAGE_NAME'
+            steps {
+                withDockerRegistry([credentialsId: 'docker-hub-credentials']) {
+                    // Docker login is automatically handled by withDockerRegistry
+                    sh "docker push $IMAGE_NAME"
                 }
             }
         }
