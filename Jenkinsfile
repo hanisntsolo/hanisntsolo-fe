@@ -24,9 +24,12 @@ pipeline {
             }
         stage('Publish to Docker Hub') {
             steps {
-                withDockerRegistry([credentialsId: 'docker-hub-credentials']) {
-                    // Docker login is automatically handled by withDockerRegistry
-                    sh "docker push $IMAGE_NAME"
+                script {
+                    // Authenticate with Docker Hub using the provided credentials
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
+                        // Push the Docker image to Docker Hub
+                        sh "docker push $IMAGE_NAME"
+                    }
                 }
             }
         }
