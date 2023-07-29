@@ -7,6 +7,7 @@ pipeline {
         SERVER_USER = 'root'
         SERVER_IP = '34.152.7.19'
         SERVER_DESTINATION_FOLDER = '/docker/lab/deployed'
+	SSH_KEY=''
     }
     stages {
         stage('Build') {
