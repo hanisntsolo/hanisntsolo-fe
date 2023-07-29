@@ -37,7 +37,7 @@ pipeline {
 		script {
 			//SSH into the server and deploy
 	            	withCredentials([sshUserPrivateKey(credentialsId: 'SERVER_SSH_CREDENTIALS', keyFileVariable: 'SSH_KEY')]) {
-	                sh "ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP 'docker stop your-container-name || true && docker rm react-fe || true'"
+	                sh "ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP 'docker stop react-fe || true && docker rm react-fe || true'"
 	                sh "ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP 'docker run -d -p 3000:3000 --name react-fe $IMAGE_NAME'"
 		}
             }
