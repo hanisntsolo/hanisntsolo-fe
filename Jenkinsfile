@@ -36,24 +36,9 @@ pipeline {
         stage('Deploy to Server') {
             steps {
                 script {
-                    // Fetch the SSH key and store it in a variable
                     withCredentials([sshUserPrivateKey(credentialsId: 'cloud-ssh-id', keyFileVariable: 'SSH_KEY')]) {
-                        // Customize the location of the known hosts file
-                        def knownHostsFile = '/var/jenkins_home/.ssh/known_hosts'
-                        
-                        // Create the .ssh directory if it doesn't exist
-                        sh "mkdir -p /var/jenkins_home/.ssh"
-                        
-                        // Fetch and store the host key fingerprint
-                        def remoteHost = '34.152.7.19'
-                        def remoteHostKey = sh(returnStdout: true, script: "ssh-keyscan ${remoteHost}")
-                        
-                        // Append the remote host key to the known hosts file
-                        sh "echo '${remoteHostKey}' >> ${knownHostsFile}"
-                        
-                        // Your deployment steps here, e.g., using SSH or any other method to deploy the Docker image on your server
-                        sh "ssh -i $SSH_KEY -o UserKnownHostsFile=${knownHostsFile} $SERVER_USER@$SERVER_IP 'docker stop react-fe || true && docker rm react-fe || true'"
-                        sh "ssh -i $SSH_KEY -o UserKnownHostsFile=${knownHostsFile} $SERVER_USER@$SERVER_IP 'docker run -d -p 3000:3000 --name react-fe $IMAGE_NAME'"
+                        sh "ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP 'docker stop react-fe || true && docker rm react-fe || true'"
+                        sh "ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP 'docker run -d -p 3000:3000 --name react-fe $IMAGE_NAME'"
                     }
                 }
             }
