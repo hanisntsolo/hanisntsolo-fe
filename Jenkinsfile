@@ -27,9 +27,8 @@ pipeline {
                 withCredentials([string(credentialsId: 'DOCKER_HUB_CREDENTIALS', variable: 'DOCKER_HUB_CREDENTIALS')]) {
                     sh 'docker login -u your-docker-hub-username -p $DOCKER_HUB_CREDENTIALS'
                     sh 'docker push $IMAGE_NAME'
-                }
-            }
-        }
+	    }
+	}
         stage('Deploy to Server') {
             steps {
 
