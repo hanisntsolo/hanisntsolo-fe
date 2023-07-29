@@ -35,12 +35,28 @@ pipeline {
         }
         stage('Deploy to Server') {
             steps {
-                    // Your deployment steps here, e.g., using SSH or any other method to deploy the Docker image on your server
                 script {
-                        //SSH into the server and deploy
+                    // Fetch the SSH key and store it in a variable
                     withCredentials([sshUserPrivateKey(credentialsId: 'cloud-ssh-id', keyFileVariable: 'SSH_KEY')]) {
-                    sh "ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP 'docker stop react-fe || true && docker rm react-fe || true'"
-                    sh "ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP 'docker run -d -p 3000:3000 --name react-fe $IMAGE_NAME'"
+                        // Fetch and store the host key fingerprint
+                        def remoteHost = '34.152.7.19'
+                        def remoteHostKey = sh(returnStdout: true, script: "ssh-keyscan ${remoteHost}")
+                        // Customize the location of the known hosts file
+                        def knownHostsFile = '/var/jenkins_home/.ssh/known_hosts'
+                        
+                        // Compare the stored fingerprint with the one from the server
+                        def fingerprintCommand = "ssh-keygen -lf -"
+                        def currentFingerprint = sh(returnStdout: true, script: "${fingerprintCommand}", input: remoteHostKey).trim()
+                        def expectedFingerprint = 'YOUR_EXPECTED_FINGERPRINT' // Replace this with the expected fingerprint
+                        
+                        if (currentFingerprint == expectedFingerprint) {
+                            echo "Host key verification successful!"
+                            // Your deployment steps here, e.g., using SSH or any other method to deploy the Docker image on your server
+                            sh "ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP 'docker stop react-fe || true && docker rm react-fe || true'"
+                            sh "ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP 'docker run -d -p 3000:3000 --name react-fe $IMAGE_NAME'"
+                        } else {
+                            error "Host key verification failed! Possible man-in-the-middle attack."
+                        }
                     }
                 }
             }
