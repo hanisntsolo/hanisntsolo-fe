@@ -2,7 +2,7 @@
 on:
   push:
     branches:
-      - "site" # change to the branch you wish to deploy from
+      - "main" # change to the branch you wish to deploy from
 
 permissions:
   contents: read
