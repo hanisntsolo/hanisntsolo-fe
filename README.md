@@ -1,6 +1,6 @@
 
 # hanisntsolo-fe
-React app
+React Blog
 =======
 # Getting Started with Create React App
 
