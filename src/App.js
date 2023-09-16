@@ -8,7 +8,7 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
         <p>
         <code>This application is running on github pages!!</code>
-        <code>Code pushed from site branch in repository!</code>
+        <code>Code pushed from main branch in repository!</code>
         </p>
         <a
           className="App-link"
