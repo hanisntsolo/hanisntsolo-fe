@@ -1,6 +1,6 @@
 
 # hanisntsolo-fe
-React Blog
+React Blog | This application is lateley deployed using github pages and jekyll actions steps. Please check jekyll for full documentation.
 =======
 # Getting Started with Create React App
 
