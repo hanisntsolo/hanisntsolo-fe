@@ -1,3 +1,4 @@
+# Well you wanna make sure that your package.json has a homepage pointer to the entry point in the application.
 on:
   push:
     branches:
