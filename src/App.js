@@ -7,7 +7,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-        <code>Just Check this application triggered from automated build</code>
+        <code>This application is running on github pages!!</code>
         </p>
         <a
           className="App-link"
